@@ -42,16 +42,13 @@ static async Task ProcessClient(NetworkStream stream, PipeReader reader)
         {
             // Process the line.
             var response = ProcessLine(line);
-            Console.WriteLine("Response: " + response?.prime);
             if (response is null)
             {
                 await stream.WriteAsync(new byte[1]);
                 return;
             }
-            var json = JsonSerializer.Serialize(response);
-            await stream.WriteAsync(Encoding.UTF8.GetBytes(json));
+            await JsonSerializer.SerializeAsync(stream, response);
             stream.WriteByte(10);
-            await stream.FlushAsync();
         }
 
         // Tell the PipeReader how much of the buffer has been consumed.
@@ -84,7 +81,6 @@ static bool TryReadLine(ref ReadOnlySequence<byte> buffer, out ReadOnlySequence<
 
 static Response? ProcessLine(in ReadOnlySequence<byte> buffer)
 {
-    Console.WriteLine("Request: " + Encoding.UTF8.GetString(buffer));
     var req = Deserialize(buffer);
     if (req?.method != "isPrime" || req.number is null)
         return null;
