@@ -1,10 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Buffers;
+﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
+
+var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
 var listenSocket = new Socket(SocketType.Stream, ProtocolType.Tcp);
 listenSocket.Bind(new IPEndPoint(IPAddress.Any, 18087));
@@ -17,7 +17,8 @@ while (true)
     _ = ProcessDataAsync(socket);
 }
 
-static async Task ProcessDataAsync(Socket socket)
+
+async Task ProcessDataAsync(Socket socket)
 {
     Console.WriteLine($"[{socket.RemoteEndPoint}]: connected");
 
@@ -31,7 +32,7 @@ static async Task ProcessDataAsync(Socket socket)
     Console.WriteLine($"[{socket.RemoteEndPoint}]: disconnected");
 }
 
-static async Task ProcessClient(NetworkStream stream, PipeReader reader)
+async Task ProcessClient(NetworkStream stream, PipeReader reader)
 {
     while (true)
     {
@@ -47,7 +48,7 @@ static async Task ProcessClient(NetworkStream stream, PipeReader reader)
                 await stream.WriteAsync(new byte[1]);
                 return;
             }
-            await JsonSerializer.SerializeAsync(stream, response);
+            await JsonSerializer.SerializeAsync(stream, response, options);
             stream.WriteByte(10);
         }
 
@@ -79,15 +80,15 @@ static bool TryReadLine(ref ReadOnlySequence<byte> buffer, out ReadOnlySequence<
     return true;
 }
 
-static Response? ProcessLine(in ReadOnlySequence<byte> buffer)
+Response? ProcessLine(in ReadOnlySequence<byte> buffer)
 {
     var req = Deserialize(buffer);
-    if (req?.method != "isPrime" || req.number is null)
+    if (req?.Method != "isPrime" || req.Number is null)
         return null;
 
-    Console.WriteLine("Request " + req.number);
-    if (IsWhole(req.number.Value))
-        return new Response("isPrime", IsPrime((long)req.number));
+    Console.WriteLine("Request " + req.Number);
+    if (IsWhole(req.Number.Value))
+        return new Response("isPrime", IsPrime((long)req.Number));
     else
         return new Response("isPrime", false);
 }
@@ -104,12 +105,12 @@ static bool IsPrime(long x)
     return true;
 }
 
-static Request? Deserialize(in ReadOnlySequence<byte> buffer)
+Request? Deserialize(in ReadOnlySequence<byte> buffer)
 {
     try
     {
         var reader = new Utf8JsonReader(buffer);
-        var req = JsonSerializer.Deserialize<Request>(ref reader);
+        var req = JsonSerializer.Deserialize<Request>(ref reader, options);
         return req;
     }
     catch (Exception)
@@ -118,5 +119,5 @@ static Request? Deserialize(in ReadOnlySequence<byte> buffer)
     }
 }
 
-record Request(string? method, double? number);
-record Response(string method, bool prime);
+record Request(string? Method, double? Number);
+record Response(string Method, bool Prime);
