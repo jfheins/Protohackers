@@ -29,7 +29,8 @@ async Task ProcessDataAsync(Socket socket)
 
     var stream = new NetworkStream(socket);
     var reader = PipeReader.Create(stream);
-    await ProcessClient(stream, reader);
+    var w = PipeWriter.Create(stream);
+    await ProcessClient(reader, w);
     // Mark the PipeReader as complete.
     await reader.CompleteAsync();
     socket.Close();
@@ -37,7 +38,7 @@ async Task ProcessDataAsync(Socket socket)
     Console.WriteLine($"[{remote}]: disconnected");
 }
 
-async Task ProcessClient(NetworkStream stream, PipeReader reader)
+async Task ProcessClient(PipeReader reader, PipeWriter writer)
 {
     var prices = new List<Insert>();
     while (true)
@@ -57,11 +58,10 @@ async Task ProcessClient(NetworkStream stream, PipeReader reader)
                 prices.Add(i);
             if (msg is Query q)
             {
-                var relevantPrices = prices
+                var mean = prices
                     .Where(it => it.Timestamp >= q.MinTime && it.Timestamp <= q.MaxTime)
-                    .Select(it => it.Price).ToList();
-                var mean = relevantPrices.Any() ? relevantPrices.Average() : 0d;
-                await stream.WriteAsync(new Response((int)mean));
+                    .Select(it => it.Price).DefaultIfEmpty(0).Average();
+                await writer.WriteAsync(new Response((int)mean));
             }
         }
 
