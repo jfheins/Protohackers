@@ -3,13 +3,13 @@ using System.IO.Pipelines;
 
 namespace Core;
 
-public abstract class ChunkHandler : Handler
+public abstract class DelimitedHandler : Handler
 {
-    private readonly int chunkLength;
+    private readonly byte delimiter;
 
-    public ChunkHandler(int bytes)
+    public DelimitedHandler(byte delimiter)
     {
-        chunkLength = bytes;
+        this.delimiter = delimiter;
     }
 
     protected abstract Task HandleChunk(byte[] chunk);
@@ -21,10 +21,10 @@ public abstract class ChunkHandler : Handler
             ReadResult result = await Reader.ReadAsync();
             ReadOnlySequence<byte> buffer = result.Buffer;
 
-            while (buffer.Length >= chunkLength)
+            while (buffer.TryFind(delimiter, out var pos))
             {
-                var chunk = buffer.Slice(0, chunkLength).ToArray();
-                buffer = buffer.Slice(chunkLength);
+                var chunk = buffer.Slice(0, pos.Value).ToArray();
+                buffer = buffer.Slice(buffer.GetPosition(1, pos.Value));
                 await HandleChunk(chunk);
             }
 

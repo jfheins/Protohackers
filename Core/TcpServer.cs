@@ -18,7 +18,7 @@ public class TcpServer
         _listenSocket.Listen(120);
     }
 
-    public async Task StartAsync(Func<PipeReader, PipeWriter, Handler> handlerFactory)
+    public async Task StartAsync<T>() where T: Handler, new()
     {
         while (true)
         {
@@ -33,7 +33,8 @@ public class TcpServer
             var stream = new NetworkStream(socket);
             var reader = PipeReader.Create(stream);
             var writer = PipeWriter.Create(stream);
-            await handlerFactory(reader, writer).HandleClient();
+            
+            await new T().Init(reader, writer).HandleClient();
             // Mark as complete.
             await reader.CompleteAsync();
             await writer.CompleteAsync();

@@ -4,14 +4,15 @@ namespace Core;
 
 public abstract class Handler
 {
-    public Handler(PipeReader reader, PipeWriter writer)
-    {
-        Reader = reader;
-        Writer = writer;
-    }
-
-    protected PipeReader Reader { get; }
-    protected PipeWriter Writer { get; }
+    protected PipeReader Reader { get; private set; } = null!;
+    protected PipeWriter Writer { get; private set; } = null!;
 
     public abstract Task HandleClient();
+
+    internal Handler Init(PipeReader r, PipeWriter w)
+    {
+        Reader = r;
+        Writer = w;
+        return this;
+    }
 }

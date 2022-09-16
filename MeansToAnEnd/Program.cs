@@ -1,19 +1,14 @@
 ﻿using Core;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.Diagnostics;
-using System.IO.Pipelines;
-using System.Text.Json;
 
-var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-
-await new TcpServer().StartAsync((r, w) => new PriceHandler(r, w));
+await new TcpServer().StartAsync<PriceHandler>();
 
 class PriceHandler : ChunkHandler
 {
     private readonly List<Insert> prices = new();
 
-    public PriceHandler(PipeReader r, PipeWriter w) : base(r, w, 9) { }
+    public PriceHandler() : base(9) { }
 
     protected override async Task HandleChunk(byte[] chunk)
     {
@@ -56,7 +51,5 @@ class PriceHandler : ChunkHandler
             return bytes.AsMemory();
         }
     }
-
-
 }
 
