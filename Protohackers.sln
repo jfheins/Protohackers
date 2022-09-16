@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smoketest", "Smoketest\Smok
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeTime", "PrimeTime\PrimeTime.csproj", "{2C66517D-9002-417C-9FC3-1C86CB16ED90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeansToAnEnd", "MeansToAnEnd\MeansToAnEnd.csproj", "{4F4B7F49-9348-4C80-A8B7-3A10B186587D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeansToAnEnd", "MeansToAnEnd\MeansToAnEnd.csproj", "{4F4B7F49-9348-4C80-A8B7-3A10B186587D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{3A2C7AB2-921A-4280-98DA-BCF3BAB1D25C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{4F4B7F49-9348-4C80-A8B7-3A10B186587D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F4B7F49-9348-4C80-A8B7-3A10B186587D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F4B7F49-9348-4C80-A8B7-3A10B186587D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A2C7AB2-921A-4280-98DA-BCF3BAB1D25C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A2C7AB2-921A-4280-98DA-BCF3BAB1D25C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A2C7AB2-921A-4280-98DA-BCF3BAB1D25C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A2C7AB2-921A-4280-98DA-BCF3BAB1D25C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
