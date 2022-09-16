@@ -1,9 +1,4 @@
 ﻿using Core;
-using System.Buffers;
-using System.IO;
-using System.IO.Pipelines;
-using System.Net;
-using System.Net.Sockets;
 using System.Text.Json;
 
 await new TcpServer().StartAsync<PrimeHandler>();
@@ -12,7 +7,6 @@ class PrimeHandler : DelimitedHandler
 {
     public PrimeHandler() : base(10)
     {
-
     }
 
     private readonly JsonSerializerOptions options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
