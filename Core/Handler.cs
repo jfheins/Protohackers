@@ -15,4 +15,10 @@ public abstract class Handler
         Writer = w;
         return this;
     }
+
+    protected async Task WriteAsync(ReadOnlyMemory<byte> data)
+    {
+        _ = await Writer.WriteAsync(data);
+        _ = await Writer.FlushAsync();
+    }
 }

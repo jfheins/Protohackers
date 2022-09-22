@@ -8,5 +8,6 @@ class EchoHandler : ArbitraryChunkHandler
     protected override async Task HandleChunk(ReadOnlyMemory<byte> chunk)
     {
         _ = await Writer.WriteAsync(chunk);
+        await Writer.FlushAsync();
     }
 }

@@ -12,29 +12,38 @@ public abstract class DelimitedHandler : Handler
         this.delimiter = delimiter;
     }
 
-    protected abstract Task HandleChunk(byte[] chunk);
+    protected abstract Task<bool> HandleChunk(byte[] chunk);
 
     public override async Task HandleClient()
     {
-        while (true)
+        var success = true;
+        while (success)
         {
-            ReadResult result = await Reader.ReadAsync();
-            ReadOnlySequence<byte> buffer = result.Buffer;
-
-            while (buffer.TryFind(delimiter, out var pos))
+            try
             {
-                var chunk = buffer.Slice(0, pos.Value).ToArray();
-                buffer = buffer.Slice(buffer.GetPosition(1, pos.Value));
-                await HandleChunk(chunk);
+                ReadResult result = await Reader.ReadAsync();
+                ReadOnlySequence<byte> buffer = result.Buffer;
+
+                while (success && buffer.TryFind(delimiter, out var pos))
+                {
+                    var chunk = buffer.Slice(0, pos.Value).ToArray();
+                    buffer = buffer.Slice(buffer.GetPosition(1, pos.Value));
+                    success = await HandleChunk(chunk);
+                }
+
+                // Tell the PipeReader how much of the buffer has been consumed.
+                Reader.AdvanceTo(buffer.Start, buffer.End);
+
+                // Stop reading if there's no more data coming.
+                if (result.IsCompleted)
+                {
+                    Console.WriteLine($"completed");
+                    break;
+                }
             }
-
-            // Tell the PipeReader how much of the buffer has been consumed.
-            Reader.AdvanceTo(buffer.Start, buffer.End);
-
-            // Stop reading if there's no more data coming.
-            if (result.IsCompleted)
+            catch (Exception ex)
             {
-                Console.WriteLine($"completed");
+                Console.WriteLine($"Exception: " + ex.Message);
                 break;
             }
         }
