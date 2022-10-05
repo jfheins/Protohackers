@@ -15,7 +15,7 @@ public abstract class ArbitraryChunkHandler : Handler
                 await HandleChunk(chunk);
 
             // Tell the PipeReader how much of the buffer has been consumed.
-            Reader.AdvanceTo(buffer.Start, buffer.End);
+            Reader.AdvanceTo(buffer.End, buffer.End);
 
             // Stop reading if there's no more data coming.
             if (result.IsCompleted)
