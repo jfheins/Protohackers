@@ -23,7 +23,7 @@ class PriceHandler : ChunkHandler
             var mean = prices
                 .Where(it => it.Timestamp >= q.MinTime && it.Timestamp <= q.MaxTime)
                 .Select(it => it.Price).DefaultIfEmpty(0).Average();
-            await Writer.WriteAsync(new Response((int)mean));
+            await WriteAsync(new Response((int)mean));
         }
     }
     static object? ParseMessage(byte[] msg)

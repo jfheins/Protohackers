@@ -12,16 +12,17 @@ class PrimeHandler : DelimitedHandler
     private readonly JsonSerializerOptions options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     private readonly byte[] LineFeed = new byte[] { 10 };
 
-    protected override async Task HandleChunk(byte[] chunk)
+    protected override async Task<bool> HandleChunk(byte[] chunk)
     {
         var response = ProcessLine(chunk);
         if (response is null)
         {
-            await Writer.WriteAsync(LineFeed);
-            return;
+            await WriteAsync(LineFeed);
+            return false;
         }
         await JsonSerializer.SerializeAsync(Writer.AsStream(true), response, options);
-        await Writer.WriteAsync(LineFeed);
+        await WriteAsync(LineFeed);
+        return true;
     }
 
 
