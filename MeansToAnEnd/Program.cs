@@ -30,7 +30,7 @@ class PriceHandler : ChunkHandler
     {
         Debug.Assert(msg.Length == 9);
         var type = (char)msg[0];
-        Console.WriteLine($"Read {type}");
+        //Console.WriteLine($"Read {type}");
         var firstint = BinaryPrimitives.ReadInt32BigEndian(msg.AsSpan(1..5));
         var secondint = BinaryPrimitives.ReadInt32BigEndian(msg.AsSpan(5..9));
         if (type == 'I')
