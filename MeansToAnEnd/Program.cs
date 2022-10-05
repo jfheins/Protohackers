@@ -6,7 +6,7 @@ await new TcpServer().StartAsync<PriceHandler>();
 
 class PriceHandler : ChunkHandler
 {
-    private readonly List<Insert> prices = new();
+    private readonly List<Insert> prices = new(64_000);
 
     public PriceHandler() : base(9) { }
 
@@ -20,10 +20,13 @@ class PriceHandler : ChunkHandler
             prices.Add(i);
         if (msg is Query q)
         {
+            var sw = new Stopwatch(); sw.Start();
             var mean = prices
                 .Where(it => it.Timestamp >= q.MinTime && it.Timestamp <= q.MaxTime)
                 .Select(it => it.Price).DefaultIfEmpty(0).Average();
             await WriteAsync(new Response((int)mean));
+            sw.Stop();
+            Console.WriteLine($"Query took {sw.ElapsedMilliseconds}ms");
         }
     }
     static object? ParseMessage(byte[] msg)
@@ -42,6 +45,7 @@ class PriceHandler : ChunkHandler
 
     record Insert(int Timestamp, int Price);
     record Query(int MinTime, int MaxTime);
+
     record Response(int Number)
     {
         public static implicit operator ReadOnlyMemory<byte>(Response r)
