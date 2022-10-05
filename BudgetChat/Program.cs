@@ -2,6 +2,8 @@
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO.Pipelines;
+using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json;
 
@@ -18,16 +20,29 @@ class ChatHandler : DelimitedHandler
     {
     }
 
+    private static ICollection<ChatHandler> ClientCopy
+    {
+        get
+        {
+            List<ChatHandler> copy;
+            lock (clients) copy = clients.ToList();
+            return copy;
+        }
+    }
+
     public override async Task HandleClient()
     {
         await WriteAsync(Encoding.UTF8.GetBytes("Welcome\r\n"));
         await base.HandleClient();
-        clients.Remove(this);
+        lock (clients)
+        {
+            clients.Remove(this);
+        }
 
         if (username != null)
         {
             var outMsg = Encoding.UTF8.GetBytes($"* {username} has left the room\r\n");
-            foreach (var c in clients)
+            foreach (var c in ClientCopy)
             {
                 await c.WriteAsync(outMsg);
             }
@@ -44,19 +59,21 @@ class ChatHandler : DelimitedHandler
                 return false;
 
             var msg = Encoding.UTF8.GetBytes($"* {username} has entered the room\r\n");
-            foreach (var c in clients)
+            var existing = ClientCopy;
+            foreach (var c in existing)
             {
                 await c.WriteAsync(msg);
             }
-            msg = Encoding.UTF8.GetBytes($"* The room contains: { string.Join(", ", clients.Select(it => it.username)) }\r\n");
+            msg = Encoding.UTF8.GetBytes($"* The room contains: {string.Join(", ", existing.Select(it => it.username))}\r\n");
             await WriteAsync(msg);
-            clients.Add(this);
+            lock (clients)
+                clients.Add(this);
         }
         else
         {
             var message = Encoding.UTF8.GetString(chunk);
-            var outMsg = Encoding.UTF8.GetBytes($"[{ username }] { message }\r\n");
-            foreach (var c in clients.Where(it => it != this))
+            var outMsg = Encoding.UTF8.GetBytes($"[{username}] {message}\r\n");
+            foreach (var c in ClientCopy.Where(it => it != this))
             {
                 await c.WriteAsync(outMsg);
             }
