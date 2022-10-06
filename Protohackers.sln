@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "0_Core", "Core\0_Core.cspro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3_BudgetChat", "BudgetChat\3_BudgetChat.csproj", "{15181EFF-D6B7-440A-9BF3-7404E56D7199}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_UnusualDatabase", "4_UnusualDatabase\4_UnusualDatabase.csproj", "{D2C0C650-F314-48CF-8C90-ECFE7A4DF02E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{15181EFF-D6B7-440A-9BF3-7404E56D7199}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15181EFF-D6B7-440A-9BF3-7404E56D7199}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15181EFF-D6B7-440A-9BF3-7404E56D7199}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2C0C650-F314-48CF-8C90-ECFE7A4DF02E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2C0C650-F314-48CF-8C90-ECFE7A4DF02E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2C0C650-F314-48CF-8C90-ECFE7A4DF02E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2C0C650-F314-48CF-8C90-ECFE7A4DF02E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
