@@ -1,5 +1,6 @@
 ﻿using Core;
 using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Reflection.Metadata;
@@ -12,7 +13,13 @@ await new UdpServer().StartAsync<DbHandler>();
 
 class DbHandler : UdpHandler
 {
-    private static Dictionary<string, string> _db = new() { { "version", "2.0" } };
+    private static ConcurrentDictionary<string, string> _db;
+
+    static DbHandler()
+    {
+        _db = new ConcurrentDictionary<string, string>(3, 500);
+        _db["version"] = "J 2.0";
+    }
 
     public override async Task<bool> HandlePacket(byte[] chunk)
     {

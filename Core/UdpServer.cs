@@ -23,7 +23,7 @@ public class UdpServer
         {
             var sender = new IPEndPoint(IPAddress.Any, 0);
             var msg = await _listenSocket.ReceiveMessageFromAsync(buffer, sender);
-            await new T().Init(_listenSocket, msg).HandlePacket(buffer[..msg.ReceivedBytes]);
+            await new T().Init(_listenSocket, msg.RemoteEndPoint).HandlePacket(buffer[..msg.ReceivedBytes]);
         }
     }
 }
