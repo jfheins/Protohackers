@@ -31,8 +31,9 @@ public class TcpServer
             var stream = new NetworkStream(socket);
             var reader = PipeReader.Create(stream);
             var writer = PipeWriter.Create(stream);
-            
+
             await new T().Init(reader, writer).HandleClient();
+
             // Mark as complete.
             await reader.CompleteAsync();
             await writer.CompleteAsync();
